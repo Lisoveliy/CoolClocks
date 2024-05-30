@@ -21,18 +21,10 @@ InputController *button = new InputController(D1);
 Time *GetTimeDiff(time_t timeFrom, time_t timeTo)
 {
 	time_t deltaTime = abs(timeTo - timeFrom);
-	Serial.print("deltatime");
-	Serial.print(deltaTime);
 
 	char hours = deltaTime / 3600;
 	char minutes = (deltaTime - (hours * 3600)) / 60;
 	char seconds = (deltaTime - (hours * 3600)) - (minutes * 60);
-	Serial.print((short)hours);
-	Serial.print(":");
-	Serial.print((short)minutes);
-	Serial.print(":");
-	Serial.print((short)seconds);
-	Serial.println();
 
 	return new Time(hours, minutes, seconds);
 }
@@ -55,11 +47,14 @@ void setup()
 
 void loop()
 {
-	while (WiFi.status() != WL_CONNECTED)
+	unsigned long timenow = millis();
+
+	while (!WiFi.isConnected())
 	{
-		Serial.print("Connecting to WiFi ...");
+		Serial.println("Connecting to WiFi ...");
 		if (!timeClient.isTimeSet())
 		{
+			display->clear();
 			display->setChar(length, 'W');
 			display->setChar(length - 7, 'i');
 			display->setChar(length - 10, 'F');
@@ -68,9 +63,8 @@ void loop()
 		}
 		delay(1000);
 	}
+	
 	button->UpdateInput();
-	unsigned long timenow = millis();
-	Serial.println(button->GetState());
 	if (button->ButtonIsReleased())
 	{
 		if (state == 0)
@@ -84,18 +78,8 @@ void loop()
 	}
 	if (timenow - cycleTime >= 100)
 	{
-		digitalWrite(LED_BUILTIN, !button->GetState());
-		if (button->GetState())
-			if (!timeClient.isTimeSet())
-			{
-				display->setChar(length, 'L');
-				display->setChar(length - 5, 'O');
-				display->setChar(length - 10, 'A');
-				display->setChar(length - 15, 'D');
-				display->update();
-				return;
-			}
 		timeClient.update();
+
 		display->clear();
 		switch (state)
 		{

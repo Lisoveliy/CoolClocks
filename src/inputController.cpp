@@ -26,10 +26,6 @@ public:
             }
             updateTime = millis();
         }
-
-        Serial.print("Real state ");
-        Serial.println(digitalRead(port));
-        Serial.println(this->GetState());
     }
     bool GetState()
     {
