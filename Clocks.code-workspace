@@ -1,0 +1,20 @@
+{
+	"folders": [
+		{
+			"path": "D:/Source/ESP/Clocks"
+		},
+		{
+			"name": "Arduino",
+			"path": "../Arduino"
+		},
+		{
+			"name": "CoolClocks",
+			"path": "."
+		}
+	],
+	"settings": {
+		"files.associations": {
+			"chrono": "cpp"
+		}
+	}
+}
