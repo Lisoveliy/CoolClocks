@@ -23,4 +23,12 @@ public:
         counter -= numberLength;
         display->setChar(counter, time->GetCharSegment(SecondSegment2));
     }
+    static void print(char* word, char len, char screenLen, MD_MAX72XX* display)
+    {
+        char symLen = 5;
+        for(int i = 0; i < len; i++){
+            char l = word[i] == 'i' ? symLen : symLen + 1;
+			display->setChar(screenLen - (l * i), word[i]);
+        }
+    }
 };

@@ -9,13 +9,19 @@
 #include <headers/clockState.h>
 #include <inputController.cpp>
 
+// State
+const char timeZone = 3;
 const char length = 31;
 const char numberLength = 5;
 ScreenType state = Clock;
-WiFiUDP ntpUDP;
-NTPClient timeClient(ntpUDP, "pool.ntp.org");
-MD_MAX72XX *display = new MD_MAX72XX(MD_MAX72XX::FC16_HW, D7, D5, D8, 4);
 unsigned long cycleTime = 0;
+
+// Software
+WiFiUDP ntpUDP;
+NTPClient timeClient(ntpUDP, "0.ru.pool.ntp.org", timeZone);
+
+// Hardware
+MD_MAX72XX *display = new MD_MAX72XX(MD_MAX72XX::FC16_HW, D7, D5, D8, 4);
 InputController *button = new InputController(D1);
 
 Time *GetTimeDiff(time_t timeFrom, time_t timeTo)
@@ -55,15 +61,12 @@ void loop()
 		if (!timeClient.isTimeSet())
 		{
 			display->clear();
-			display->setChar(length, 'W');
-			display->setChar(length - 7, 'i');
-			display->setChar(length - 10, 'F');
-			display->setChar(length - 17, 'i');
+			DisplayController::print("WIFI", 4, length, display);
 			display->update();
 		}
 		delay(1000);
 	}
-	
+
 	button->UpdateInput();
 	if (button->ButtonIsReleased())
 	{
@@ -75,17 +78,20 @@ void loop()
 		{
 			state = ScreenType::Clock;
 		}
+
+		Serial.print("Mode changed to ");
+		Serial.println(state);
 	}
 	if (timenow - cycleTime >= 100)
 	{
 		timeClient.update();
-
 		display->clear();
+
 		switch (state)
 		{
 		case ScreenType::Clock:
 			DisplayController::setTime(new Time(
-										   timeClient.getHours() + 3,
+										   timeClient.getHours(),
 										   timeClient.getMinutes(),
 										   timeClient.getSeconds()),
 									   display, length, numberLength);
