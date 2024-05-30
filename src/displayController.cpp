@@ -22,6 +22,7 @@ public:
         display->setChar(counter, time->GetCharSegment(SecondSegment1));
         counter -= numberLength;
         display->setChar(counter, time->GetCharSegment(SecondSegment2));
+        delete time;
     }
     static void print(char* word, char len, char screenLen, MD_MAX72XX* display)
     {

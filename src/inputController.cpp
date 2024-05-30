@@ -16,7 +16,7 @@ public:
     }
     void UpdateInput()
     {
-        if(millis() - updateTime > 10){
+        if(millis() - updateTime > 30){
             bool state = digitalRead(port);
             if(state != _buttonState){
                 _buttonState = state;

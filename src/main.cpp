@@ -8,6 +8,7 @@
 #include <math.h>
 #include <headers/clockState.h>
 #include <inputController.cpp>
+#include <EEPROM.h>
 
 // State
 const char timeZone = 3;
@@ -18,7 +19,7 @@ unsigned long cycleTime = 0;
 
 // Software
 WiFiUDP ntpUDP;
-NTPClient timeClient(ntpUDP, "0.ru.pool.ntp.org", timeZone);
+NTPClient timeClient(ntpUDP, "0.ru.pool.ntp.org", timeZone * 3600);
 
 // Hardware
 MD_MAX72XX *display = new MD_MAX72XX(MD_MAX72XX::FC16_HW, D7, D5, D8, 4);
@@ -37,8 +38,11 @@ Time *GetTimeDiff(time_t timeFrom, time_t timeTo)
 
 void setup()
 {
+	EEPROM.begin(1);
+	state = (ScreenType)EEPROM.read(0);
+	EEPROM.end();
+	
 	cycleTime = millis();
-
 	display->begin();
 	display->control(MD_MAX72XX::INTENSITY, 1);
 	display->control(MD_MAX72XX::UPDATE, MD_MAX72XX::OFF);
@@ -47,8 +51,6 @@ void setup()
 
 	WiFi.mode(WIFI_STA);
 	WiFi.begin(WiFiConfig::ssid, WiFiConfig::password);
-
-	pinMode(LED_BUILTIN, OUTPUT);
 }
 
 void loop()
@@ -72,17 +74,25 @@ void loop()
 	{
 		if (state == 0)
 		{
+			EEPROM.begin(1);
+			EEPROM.write(0, ScreenType::Timer);
 			state = ScreenType::Timer;
+			EEPROM.commit();
+			EEPROM.end();
 		}
 		else
 		{
+			EEPROM.begin(1);
+			EEPROM.write(0, ScreenType::Clock);
 			state = ScreenType::Clock;
+			EEPROM.commit();
+			EEPROM.end();
 		}
 
 		Serial.print("Mode changed to ");
 		Serial.println(state);
 	}
-	if (timenow - cycleTime >= 100)
+	if (timenow - cycleTime >= 50)
 	{
 		timeClient.update();
 		display->clear();
@@ -99,6 +109,8 @@ void loop()
 		case ScreenType::Timer:
 			DisplayController::setTime(GetTimeDiff(timeClient.getEpochTime(), 1717312500), display, length, numberLength);
 			break;
+		default:
+			DisplayController::print("PRESS", 5, length, display);
 		}
 
 		display->update();
