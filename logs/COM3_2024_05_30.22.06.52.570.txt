@@ -5,3 +5,9 @@
 22:11:12:716 -> Mode changed to 1
 22:11:12:914 -> Mode changed to 0
 22:11:14:441 -> Mode changed to 1
+22:22:20:056 -> Mode changed to 0
+22:22:20:274 -> Mode changed to 1
+22:22:23:019 -> Mode changed to 0
+22:25:39:143 -> Mode changed to 1
+22:25:39:316 -> Mode changed to 0
+22:25:42:003 -> Mode changed to 1

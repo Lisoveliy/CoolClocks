@@ -107,7 +107,7 @@ void loop()
 									   display, length, numberLength);
 			break;
 		case ScreenType::Timer:
-			DisplayController::setTime(GetTimeDiff(timeClient.getEpochTime(), 1717312500), display, length, numberLength);
+			DisplayController::setTime(GetTimeDiff(timeClient.getEpochTime() - timeZone * 3600, 1717312500), display, length, numberLength);
 			break;
 		default:
 			DisplayController::print("PRESS", 5, length, display);
